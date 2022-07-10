@@ -1,0 +1,11 @@
+{
+  "name": "palgas",
+  "version": "1.0.0",
+  "description": "TS project backend",
+  "main": "src/server.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Manuel Bojacà",
+  "license": "ISC"
+}
