@@ -66,10 +66,12 @@ export const userSchema = new Schema<IUser>(
       required: true,
       match: [passRegex, "invalid password"]
     },
-    vehicles: {
-      type: [{ type: Schema.Types.ObjectId, ref: "Vehicle" }],
-      required: false,
-    },
+    vehicles: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Vehicle" 
+      },
+    ],
   },
   { timestamps: true }
 );

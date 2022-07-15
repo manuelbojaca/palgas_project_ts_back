@@ -39,13 +39,15 @@ const userController = {
       res.status(404).json({message: "User not found", data: err});
     }
   },
-  /*
+  
   //UPDATE
-  async update(req: Request, res: Response) {
+  async update(req: IGetUserAuthInfoRequest, res: Response) {
     try {
-      const userId = req.params;
-      if (userId !== req.user)
-      const user = await User.findByIdAndUpdate(userId, req.body, {
+      const { userid }= req.params;
+      if (userid !== req.user){
+        throw new Error();
+      }
+      const user = await User.findByIdAndUpdate(userid, req.body, {
         new: true,
         runValidators: true,
         context: "query",
@@ -57,16 +59,19 @@ const userController = {
   },
   
   //DELETE
-  async destroy(req: Request, res: Response) {
+  async destroy(req: IGetUserAuthInfoRequest, res: Response) {
     try {
-      const userId = req.user;
-      const user = await User.findByIdAndDelete(userId);
+      const { userid } = req.params;
+      if (userid !== req.user){
+        throw new Error();
+      }
+      const user = await User.findByIdAndDelete(userid);
       res.status(200).json({ message: "User deleted", data: user });
     } catch (err) {
       res.status(400).json({ message: "User could not be deleted", data: err });
     }
   },
-  */
+  
   //CREATE - POST
   async create(req: Request, res: Response) {
     try {
@@ -87,7 +92,7 @@ const userController = {
       res.status(400).json({ message: "user could not be created", data: err });
     }
   },
-  /*
+  
   //SIGNIN - POST
   async signin(req: Request, res: Response) {
     try {
@@ -100,7 +105,7 @@ const userController = {
       if (!isValid) {
         throw new Error("user or password invalid");
       }
-      const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, {
+      const token = jwt.sign({ id: user._id }, `${process.env.SECRET_KEY}`, {
         expiresIn: 60 * 60 * 24,
       });
       res.status(201).json({ message: "user login successfully", data: token });
@@ -108,7 +113,7 @@ const userController = {
       res.status(400).json({ message: "user cannot login" });
     }
   },
-
+  /*
   //RECOVERY - POST
   async recoveryPass(req: Request, res: Response) {
     try {
@@ -123,23 +128,26 @@ const userController = {
       res.status(400).json({ message: "email was not sent" });
     }
   },
-
+  */
   //CHANGE - PUT
-  async changePass(req: Request, res: Response) {
+  async changePass(req: IGetUserAuthInfoRequest, res: Response) {
     try {
-      const userId = req.user;
-      let message = "Invalid old password";
+      const { userid } = req.params;
+      if (userid !== req.user){
+        throw new Error();
+      }
+      let message : string = "Invalid old password";
       const { password, newpassword } = req.body;
       let authorization = false;
-      const user = await User.findById(userId);
+      const user = await User.findById(userid);
       if (!user) {
-        throw new Error({ message: "User not found" });
+        throw new Error("User not found");
       }
       const isValid = await bcrypt.compare(password, user.password);
       if (isValid) {
         const encPassword = await bcrypt.hash(newpassword, 8);
         const user = await User.findByIdAndUpdate(
-          userId,
+          userid,
           { password: encPassword },
           { new: true, runValidators: true, context: "query" }
         );
@@ -154,7 +162,6 @@ const userController = {
       res.status(400).json({ message: "password was not updated", data: err });
     }
   },
-  */
 };
 
 export default userController;

@@ -2,6 +2,7 @@ import { Schema, model, Types } from "mongoose";
 
 export interface IVehicle {
     type: String;
+    color: string;
     location: String;
     brand: String;
     plate: String;
@@ -12,6 +13,14 @@ export interface IVehicle {
 export const vehicleSchema = new Schema<IVehicle>(
   {
     type: {
+      type: String,
+      required: true,
+      enum: {
+        values: ["truck", "car", "bike"],
+        message: "invalid type",
+      },
+    },
+    color: {
       type: String,
       required: true,
     },
