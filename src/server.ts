@@ -5,12 +5,14 @@ import vehicleRouter from './routes/vehicle.routes';
 import cors from "cors";
 import morgan from 'morgan';
 import connect from './db'
+//HTTPS
 
 dotenv.config();
 
 const app: Express = express();
 
-const port = process.env.PORT;
+
+const port = process.env.PORT || 5000;
 connect();
 
 app.use(cors());
@@ -25,5 +27,5 @@ app.route('/').get((req: Request, res: Response) => {
 });
 
 app.listen(port, () => {
-    console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
+    console.log(`⚡️[server]: Server is running at https://localhost:${port}`);
 });
