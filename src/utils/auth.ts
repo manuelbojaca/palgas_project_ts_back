@@ -1,18 +1,17 @@
 import jwt from "jsonwebtoken";
-import { Response, NextFunction} from "express";
+import { Response, NextFunction } from "express";
 import { IGetUserAuthInfoRequest } from "../definitionFile";
-import { env } from 'process';
 import dotenv from "dotenv";
 
 dotenv.config();
 
-const auth = (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
+function auth(req: IGetUserAuthInfoRequest, res: Response, next: NextFunction): void {
   interface JwtPayload {
     id: string
   }
   try {
-    const { authorization } = req.headers;
-    //console.log("Auth: ", authorization);
+    const { authorization } = req.headers
+
     if (!authorization) {
       throw new Error("expired session auth");
     }
@@ -22,10 +21,8 @@ const auth = (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) =
     if (!token) {
       throw new Error("expired session token");
     }
-    console.log("UserCre1: ");
     const decoded = jwt.verify(token, `${process.env.SECRET_KEY}`) as JwtPayload;
-    console.log("UserCre: ", decoded.id);
-    
+
     req.user = decoded.id;
 
     next();

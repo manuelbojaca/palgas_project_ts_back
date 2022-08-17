@@ -1,14 +1,14 @@
 import { Types, Schema, model, models } from "mongoose";
 
 export interface IUser {
-    role: string;
-    name: string;
-    lastname: string;
-    photo: string;
-    phone: string;
-    email: string;
-    password: string;
-    vehicles: [Types.ObjectId];
+  role: string;
+  name: string;
+  lastname: string;
+  photo: string;
+  phone: string;
+  email: string;
+  password: string;
+  vehicles: [Types.ObjectId];
 }
 
 const nameRegex = new RegExp("(?:[a-zA-Z](?:[a-zA-Z]*[a-zA-Z]+$)+$)+$");
@@ -69,12 +69,12 @@ export const userSchema = new Schema<IUser>(
     vehicles: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Vehicle" 
+        ref: "Vehicle"
       },
     ],
   },
   { timestamps: true }
 );
 
-const User = model<IUser>("User", userSchema);
+const User = model("User", userSchema);
 export default User;

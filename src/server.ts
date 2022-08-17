@@ -1,4 +1,4 @@
-import express, {Express, Request,Response} from 'express';
+import express from 'express';
 import dotenv from 'dotenv';
 import userRouter from './routes/user.routes';
 import vehicleRouter from './routes/vehicle.routes';
@@ -9,10 +9,10 @@ import connect from './db'
 
 dotenv.config();
 
-const app: Express = express();
+const app = express();
 
 
-const port = process.env.PORT || 5000;
+const port: string | number = process.env.PORT || 5000;
 connect();
 
 app.use(cors());
@@ -22,8 +22,8 @@ app.use(morgan("dev"));
 app.use('/users', userRouter);
 app.use('/vehicles', vehicleRouter);
 
-app.route('/').get((req: Request, res: Response) => {
-    res.send('Express + TypeScript Server');
+app.use('*', (_req, res) => {
+    res.send('Gapps Project Server');
 });
 
 app.listen(port, () => {

@@ -4,9 +4,10 @@
   "description": "TS project backend",
   "main": "src/server.ts",
   "scripts": {
-    "start": "node src/server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/server.ts"
+    "dev": "ts-node-dev src/server.ts",
+    "start": "node build/server.js",
+    "tsc": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Manuel Bojacà",
   "license": "ISC",
@@ -21,7 +22,9 @@
     "mongoose": "^6.4.4",
     "morgan": "^1.10.0",
     "nodemailer": "^6.7.7",
-    "nodemon": "^2.0.19"
+    "nodemon": "^2.0.19",
+    "react-native-maps": "^1.0.3",
+    "ts-node": "^10.9.1"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
@@ -32,6 +35,7 @@
     "@types/morgan": "^1.9.3",
     "@types/node": "^18.0.3",
     "@types/nodemailer": "^6.4.4",
+    "ts-node-dev": "^2.0.0",
     "typescript": "^4.7.4"
   },
   "engines": {

@@ -1,6 +1,10 @@
-const router = require('express').Router();
+import express from 'express';
 import userController from '../controllers/user.controller';
 import auth from '../utils/auth';
+
+const router = express.Router();
+
+//const router = express.Router();
 
 router.route("/").get(userController.list);
 router.route("/:userid").get(auth, userController.show);
