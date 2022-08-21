@@ -152,10 +152,12 @@ const userController = {
 
   async signup(req: Request, res: Response) {
     try {
-      console.log("create", req.body, process.env.SECRET_KEY);
       const data = req.body;
+      if (!req.body.photo) {
+        req.body.photo = 'https://res.cloudinary.com/palgas-project/image/upload/v1658523492/users/user_adu2no.jpg';
+      }
       const user: IUser = new User({ ...data });
-      user.encryptPassword();
+      user.password = await user.encryptPassword();
       const newUser = await user.save();
       const token = jwt.sign({ id: newUser._id }, `${process.env.SECRET_KEY}`, {
         expiresIn: 60 * 60 * 24,

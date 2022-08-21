@@ -7,10 +7,11 @@ export interface IUser extends Document {
   name2: string;
   lastname1: string;
   lastname2: string;
-  photo: string;
-  phone: string;
   email: string;
   password: string;
+  city: string;
+  photo: string;
+  phone: string;
   vehicles: [Types.ObjectId];
   encryptPassword(): Promise<string>;
   validatePassword(password: string): Promise<boolean>;
@@ -64,12 +65,17 @@ export const userSchema = new Schema<IUser>(
       type: String,
       required: true
     },
+    city: {
+      type: String,
+      required: true
+    },
     photo: {
       type: String,
     },
     phone: {
       type: String,
       required: true,
+      unique: true,
       //match: [phoneRegex, "number fortmat invalid"]
     },
     vehicles: [
