@@ -1,41 +1,40 @@
 import User from "../models/user.model";
 import Vehicle from "../models/vehicle.model"
-import {Request, Response} from "express";
+import { Request, Response } from "express";
 import dotenv from 'dotenv';
-import { IGetUserAuthInfoRequest } from "../definitionFile";
 
 dotenv.config();
 
 const vehicleController = {
-  async list(req: Request, res: Response) {
+  async list(_req: Request, res: Response) {
     try {
       console.log("List")
       const users = await Vehicle.find();
       res.status(200).json({ message: "Users found", data: users });
     } catch (err) {
-      res.status(404).json({ message: "User not found", data: err});
+      res.status(404).json({ message: "User not found", data: err });
     }
   },
-  
+
   //SHOW BY ID - GET
-  async show(req: IGetUserAuthInfoRequest, res: Response) {
+  async show(req: Request, res: Response) {
     try {
       const { vehicleid } = req.params;
       const vehicle = await Vehicle.findById(vehicleid);
-      res.status(200).json({message: "User found", data: vehicle});
+      res.status(200).json({ message: "User found", data: vehicle });
     } catch (err) {
-      res.status(404).json({message: "User not found", data: err});
+      res.status(404).json({ message: "User not found", data: err });
     }
   },
 
   //UPDATE
-  async update(req: IGetUserAuthInfoRequest, res: Response) {
+  async update(req: Request, res: Response) {
     try {
       const { userid } = req.params;
-      if (userid !== req.user){
+      if (userid !== req.userId) {
         throw new Error();
       }
-      const user = await User.findByIdAndUpdate(userid, req.body, {
+      await User.findByIdAndUpdate(userid, req.body, {
         new: true,
         runValidators: true,
         context: "query",
@@ -47,10 +46,10 @@ const vehicleController = {
   },
 
   //DELETE
-  async destroy(req: IGetUserAuthInfoRequest, res: Response) {
+  async destroy(req: Request, res: Response) {
     try {
       const { userid } = req.params;
-      if (userid !== req.user){
+      if (userid !== req.userId) {
         throw new Error();
       }
       const user = await User.findByIdAndDelete(userid);
@@ -60,18 +59,18 @@ const vehicleController = {
     }
   },
 
-   //CREATE - POST
-   async create(req: IGetUserAuthInfoRequest, res: Response) {
+  //CREATE - POST
+  async create(req: Request, res: Response) {
     try {
-      const user = await User.findById(req.user);
+      const user = await User.findById(req.userId);
       if (!user) {
         throw new Error("Invalid user");
       }
       console.log('Vehicle:', user);
       const data = req.body;
-      const vehicle = await Vehicle.create({...data, userId: user._id});
+      const vehicle = await Vehicle.create({ ...data, userId: user._id });
       await user.vehicles.push(vehicle._id);
-      await user.save({validateBeforeSave: false});
+      await user.save({ validateBeforeSave: false });
 
       res.status(201).json({
         message: "vehicle created",
