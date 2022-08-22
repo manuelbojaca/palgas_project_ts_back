@@ -57,49 +57,6 @@ const userController = {
     }
   },
   /*
-    //CREATE - POST
-    async create(req: Request, res: Response) {
-      try {
-        console.log("create", req.body, process.env.SECRET_KEY);
-        const data = req.body;
-        const encPassword = await bcrypt.hash(data.password, 8);
-        const newUser = { ...data, password: encPassword };
-        const user = await User.create(newUser);
-  
-        const token = jwt.sign({ id: user._id }, `${process.env.SECRET_KEY}`, {
-          expiresIn: 60 * 60 * 24,
-        });
-        res.status(201).header('auth-token', token).json({
-          message: "user created"
-          ,
-        });
-      } catch (err) {
-        res.status(400).json({ message: "user could not be created", data: err });
-      }
-    },
-  
-    //SIGNIN - POST
-    async signin(req: Request, res: Response) {
-      try {
-        const { email, password } = req.body;
-        const user = await User.findOne({ email });
-        if (!user) {
-          throw new Error("user or password invalid");
-        }
-        const isValid = await bcrypt.compare(password, user.password);
-        if (!isValid) {
-          throw new Error("user or password invalid");
-        }
-        const token = jwt.sign({ id: user._id }, `${process.env.SECRET_KEY}`, {
-          expiresIn: 60 * 60 * 24,
-        });
-        res.status(201).json({ message: "user login successfully", data: token });
-      } catch (err) {
-        res.status(400).json({ message: "user cannot login" });
-      }
-    },
-    
-    
     //RECOVERY - POST
     async recoveryPass(req: Request, res: Response) {
       try {
@@ -156,7 +113,7 @@ const userController = {
       if (!req.body.photo) {
         req.body.photo = 'https://res.cloudinary.com/palgas-project/image/upload/v1658523492/users/user_adu2no.jpg';
       }
-      const user: IUser = new User({ ...data });
+      const user = new User({ ...data });
       user.password = await user.encryptPassword();
       const newUser = await user.save();
       const token = jwt.sign({ id: newUser._id }, `${process.env.SECRET_KEY}`, {

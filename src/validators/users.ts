@@ -59,7 +59,10 @@ export const validateSignin = [
         .isEmail(),
     check('pass')
         .exists()
-        .isString()
+        .isString(),
+    (req: Request, res: Response, next: NextFunction) => {
+        validateResult(req, res, next);
+    }
 ];
 
 export const validateUpdate = [

@@ -1,13 +1,17 @@
-import { Schema, model, Types } from "mongoose";
+import { Schema, model, Types, Document } from "mongoose";
 
-export interface IVehicle {
-    type: String;
-    color: string;
-    location: String;
-    brand: String;
-    plate: String;
-    seats: Number
-    userId: Types.ObjectId;
+export interface IVehicle extends Document {
+  type: string;
+  energy: string;
+  color: string;
+  location: string;
+  brand: string;
+  model: string;
+  year: number;
+  plate: string;
+  seats: number;
+  freeseats: number;
+  userId: Types.ObjectId;
 }
 
 export const vehicleSchema = new Schema<IVehicle>(
@@ -15,16 +19,12 @@ export const vehicleSchema = new Schema<IVehicle>(
     type: {
       type: String,
       required: true,
-      enum: {
-        values: ["truck", "car", "bike"],
-        message: "invalid type",
-      },
     },
-    color: {
+    energy: {
       type: String,
       required: true,
     },
-    location: {
+    color: {
       type: String,
       required: true,
     },
@@ -32,18 +32,30 @@ export const vehicleSchema = new Schema<IVehicle>(
       type: String,
       required: true,
     },
+    model: {
+      type: String,
+      required: true,
+    },
+    year: {
+      type: Number,
+      required: true,
+    },
     plate: {
       type: String,
       required: false,
     },
     seats: {
-      type: String,
+      type: Number,
       required: true,
     },
-    userId: { 
-      type: Schema.Types.ObjectId, 
+    freeseats: {
+      type: Number,
+      required: true,
+    },
+    userId: {
+      type: Schema.Types.ObjectId,
       ref: "User",
-      require: true, 
+      require: true,
     },
   },
   { timestamps: true }
