@@ -31,7 +31,7 @@ const vehicleController = {
     try {
       const { vehicleid } = req.params;
       const vehicle = await Vehicle.findById(vehicleid);
-      console.log('vehicle: ', vehicle);
+      console.log('vehicle: ', vehicle, 'vehUser:', vehicle!.userId, 'userId:', req.userId);
       if (vehicle!.userId.toString() !== req.userId) {
         throw new Error("Vehicle id does not belong to the user");
       }

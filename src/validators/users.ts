@@ -57,7 +57,7 @@ export const validateSignin = [
     check('email')
         .exists()
         .isEmail(),
-    check('pass')
+    check('password')
         .exists()
         .isString(),
     (req: Request, res: Response, next: NextFunction) => {
