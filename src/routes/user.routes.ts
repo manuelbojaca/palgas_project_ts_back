@@ -1,16 +1,16 @@
-import express from 'express';
+import { Router } from 'express';
 import userController from '../controllers/user.controller';
 import auth from '../utils/auth';
+import { validateSignup, validateSignin, validateUpdate } from '../validators/users';
 
-const router = express.Router();
+const router = Router();
 
-//const router = express.Router();
-
+router.route("/signin").post(validateSignin, userController.signin);
+router.route("/signup").post(validateSignup, userController.signup);
+router.route("/profile").get(auth, userController.profile);
 router.route("/").get(userController.list);
 router.route("/:userid").get(auth, userController.show);
-router.route("/").post(userController.create);
-router.route("/:userid").put(auth, userController.update);
+router.route("/").put(auth, validateUpdate, userController.update);
 router.route("/:userid").delete(auth, userController.destroy);
-router.route("/signin").post(userController.signin);
 
 export default router;
