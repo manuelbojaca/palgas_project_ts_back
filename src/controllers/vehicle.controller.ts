@@ -1,9 +1,6 @@
 import User from "../models/user.model";
 import Vehicle, { IVehicle } from "../models/vehicle.model"
 import { Request, Response } from "express";
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 const vehicleController = {
   async list(_req: Request, res: Response) {
@@ -31,8 +28,10 @@ const vehicleController = {
     try {
       const { vehicleid } = req.params;
       const vehicle = await Vehicle.findById(vehicleid);
-      console.log('vehicle: ', vehicle, 'vehUser:', vehicle!.userId, 'userId:', req.userId);
-      if (vehicle!.userId.toString() !== req.userId) {
+      if (!vehicle) {
+        throw new Error("Invalid user");
+      }
+      if (vehicle.userId.toString() !== req.userId) {
         throw new Error("Vehicle id does not belong to the user");
       }
       await Vehicle.findByIdAndUpdate(vehicleid, req.body, {
@@ -70,11 +69,9 @@ const vehicleController = {
       if (!user) {
         throw new Error("Invalid user");
       }
-      console.log('Vehicle:', user);
       const data = req.body;
       req.body.freeseats = req.body.seats;
       const vehicle: IVehicle = await Vehicle.create({ ...data, userId: user._id });
-      console.log('vehicle', vehicle, ' ', typeof vehicle._id)
       user.vehicles.push(vehicle._id);
       await user.save({ validateBeforeSave: false });
       res.status(201).json({

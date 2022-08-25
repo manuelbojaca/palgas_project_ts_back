@@ -2,13 +2,13 @@ import { Request, Response, NextFunction } from 'express';
 import { check } from 'express-validator';
 import validateResult from './validateResult';
 
-export const validateCreation = [
+export const validateAddVehicle = [
     check("type")
         .exists()
         .isIn(["micro", "sedan", "suv", "cuv", "hatchback", "roadster", "pickup", "coupe", "supercar", "minivan", "van", "bike"]),
     check("energy")
         .exists()
-        .isIn(["gasoline", "gnv", "diesel", "electricity"]),
+        .isIn(["gasoline", "ngv", "diesel", "electricity", "hybrid"]),
     check("color")
         .exists()
         .isAlpha('es-ES')

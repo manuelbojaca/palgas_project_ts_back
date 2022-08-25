@@ -12,6 +12,7 @@ export interface IVehicle extends Document {
   seats: number;
   freeseats: number;
   userId: Types.ObjectId;
+  journeys: [Types.ObjectId];
 }
 
 export const vehicleSchema = new Schema<IVehicle>(
@@ -57,6 +58,12 @@ export const vehicleSchema = new Schema<IVehicle>(
       ref: "User",
       require: true,
     },
+    journeys: [
+      {
+        type: String,
+        ref: "Journey",
+      }
+    ],
   },
   { timestamps: true }
 );
