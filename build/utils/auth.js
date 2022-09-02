@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+//import { IGetUserAuthInfoRequest } from "../definitionFile";
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 function auth(req, res, next) {
@@ -17,7 +18,7 @@ function auth(req, res, next) {
             throw new Error("expired session token");
         }
         const decoded = jsonwebtoken_1.default.verify(token, `${process.env.SECRET_KEY}`);
-        req.user = decoded.id;
+        req.userId = decoded.id;
         next();
     }
     catch (err) {
