@@ -1,21 +1,22 @@
-import { Types, Schema, model, models } from "mongoose";
+import { Document, Types, Schema, model } from "mongoose";
+import bcrypt from 'bcrypt';
 
-export interface IUser {
-    role: string;
-    name: string;
-    lastname: string;
-    photo: string;
-    phone: string;
-    email: string;
-    password: string;
-    vehicles: [Types.ObjectId];
+export interface IUser extends Document {
+  role: string;
+  name1: string;
+  name2: string;
+  lastname1: string;
+  lastname2: string;
+  email: string;
+  password: string;
+  city: string;
+  photo: string;
+  phone: string;
+  vehicles: [Types.ObjectId];
+  encryptPassword(): Promise<string>;
+  validatePassword(password: string): Promise<boolean>;
 }
 
-const nameRegex = new RegExp("(?:[a-zA-Z](?:[a-zA-Z]*[a-zA-Z]+$)+$)+$");
-//const phoneRegex = new RegExp("\+[+]*[]{0,1}[0-9]{2}[]{0,1}[-\s\./0-9]{12}[)]*$")
-const passRegex = new RegExp(
-  "(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$"
-);
 export const userSchema = new Schema<IUser>(
   {
     role: {
@@ -26,55 +27,75 @@ export const userSchema = new Schema<IUser>(
         message: "invalid role",
       },
     },
-    name: {
+    name1: {
       type: String,
       required: true,
-      match: [nameRegex, "name must contain only letters"],
-      minlenght: [2, 'name too short'],
+      min: 3,
     },
-    lastname: {
+    name2: {
+      type: String,
+      min: 3
+    },
+    lastname1: {
       type: String,
       required: true,
-      match: [nameRegex, "name must contain only letters"],
-      minlenght: [2, 'lastname too short'],
+      min: 3
     },
-    photo: {
+    lastname2: {
       type: String,
-      required: false
-    },
-    phone: {
-      type: String,
-      required: true,
-      //match: [phoneRegex, "number fortmat invalid"]
+      min: 3
     },
     email: {
       type: String,
       required: true,
+      unique: true
+      /*
       validate: [
         {
-          validator(value: any) {
+          validator(value: string) {
             return models.User.findOne({ email: value })
-              .then((user: any) => !user)
+              .then((user: IUser) => !user)
               .catch(() => false);
           },
           message: "email already exist",
         },
-      ],
+      ],*/
     },
     password: {
       type: String,
+      required: true
+    },
+    city: {
+      type: String,
+      required: true
+    },
+    photo: {
+      type: String,
+    },
+    phone: {
+      type: String,
       required: true,
-      match: [passRegex, "invalid password"]
+      unique: true,
+      //match: [phoneRegex, "number fortmat invalid"]
     },
     vehicles: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Vehicle" 
+        ref: "Vehicle"
       },
     ],
   },
   { timestamps: true }
 );
+
+userSchema.methods.encryptPassword = async function (): Promise<string> {
+  const salt = await bcrypt.genSalt(10);
+  return bcrypt.hash(this.password, salt);
+}
+
+userSchema.methods.validatePassword = async function (password: string): Promise<boolean> {
+  return await bcrypt.compare(password, this.password);
+}
 
 const User = model<IUser>("User", userSchema);
 export default User;
