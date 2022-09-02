@@ -6,16 +6,12 @@ exports.vehicleSchema = new mongoose_1.Schema({
     type: {
         type: String,
         required: true,
-        enum: {
-            values: ["truck", "car", "bike"],
-            message: "invalid type",
-        },
     },
-    color: {
+    energy: {
         type: String,
         required: true,
     },
-    location: {
+    color: {
         type: String,
         required: true,
     },
@@ -23,12 +19,24 @@ exports.vehicleSchema = new mongoose_1.Schema({
         type: String,
         required: true,
     },
+    model: {
+        type: String,
+        required: true,
+    },
+    year: {
+        type: Number,
+        required: true,
+    },
     plate: {
         type: String,
         required: false,
     },
     seats: {
-        type: String,
+        type: Number,
+        required: true,
+    },
+    freeseats: {
+        type: Number,
         required: true,
     },
     userId: {
@@ -36,6 +44,12 @@ exports.vehicleSchema = new mongoose_1.Schema({
         ref: "User",
         require: true,
     },
+    journeys: [
+        {
+            type: String,
+            ref: "Journey",
+        }
+    ],
 }, { timestamps: true });
 const Vehicle = (0, mongoose_1.model)("Vehicle", exports.vehicleSchema);
 exports.default = Vehicle;

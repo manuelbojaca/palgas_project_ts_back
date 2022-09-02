@@ -29,7 +29,7 @@ const vehicleController = {
       const { vehicleid } = req.params;
       const vehicle = await Vehicle.findById(vehicleid);
       if (!vehicle) {
-        throw new Error("Invalid user");
+        throw new Error("Invalid vehicle id");
       }
       if (vehicle.userId.toString() !== req.userId) {
         throw new Error("Vehicle id does not belong to the user");
@@ -76,10 +76,13 @@ const vehicleController = {
       await user.save({ validateBeforeSave: false });
       res.status(201).json({
         message: "vehicle created",
-        data: { vehicle }
+        data: vehicle,
       });
     } catch (err) {
-      res.status(400).json({ message: "vehicle could not be created", data: err });
+      res.status(400).json({
+        message: "vehicle could not be created",
+        data: err
+      });
     }
   },
 };
