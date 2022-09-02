@@ -1,6 +1,6 @@
 import Busboy from "busboy";
 import cloudinary from "cloudinary";
-import {Request, Response, NextFunction} from "express";
+import { Request, Response, NextFunction } from "express";
 
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -13,7 +13,7 @@ cloudinary.v2.config({
 // data.append("file", file);
 
 function formData(preset: string) {
-  return function (req: Request, res: Response, next: NextFunction) {
+  return function (req: Request, _res: Response, next: NextFunction) {
     let uploadingFile = false;
     let uploadingCount = 0;
 
@@ -30,7 +30,6 @@ function formData(preset: string) {
     //Captura partes que no son un archivo
     bb.on("field", (key: any, val: any) => {
       req.body[key] = val;
-
     });
 
     //Captura partes que si son un archivo

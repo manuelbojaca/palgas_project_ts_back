@@ -1,10 +1,20 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.userSchema = void 0;
 const mongoose_1 = require("mongoose");
-const nameRegex = new RegExp("(?:[a-zA-Z](?:[a-zA-Z]*[a-zA-Z]+$)+$)+$");
-//const phoneRegex = new RegExp("\+[+]*[]{0,1}[0-9]{2}[]{0,1}[-\s\./0-9]{12}[)]*$")
-const passRegex = new RegExp("(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$");
+const bcrypt_1 = __importDefault(require("bcrypt"));
 exports.userSchema = new mongoose_1.Schema({
     role: {
         type: String,
@@ -14,45 +24,56 @@ exports.userSchema = new mongoose_1.Schema({
             message: "invalid role",
         },
     },
-    name: {
+    name1: {
         type: String,
         required: true,
-        match: [nameRegex, "name must contain only letters"],
-        minlenght: [2, 'name too short'],
+        min: 3,
     },
-    lastname: {
+    name2: {
+        type: String,
+        min: 3
+    },
+    lastname1: {
         type: String,
         required: true,
-        match: [nameRegex, "name must contain only letters"],
-        minlenght: [2, 'lastname too short'],
+        min: 3
     },
-    photo: {
+    lastname2: {
         type: String,
-        required: false
-    },
-    phone: {
-        type: String,
-        required: true,
-        //match: [phoneRegex, "number fortmat invalid"]
+        min: 3
     },
     email: {
         type: String,
         required: true,
+        unique: true
+        /*
         validate: [
-            {
-                validator(value) {
-                    return mongoose_1.models.User.findOne({ email: value })
-                        .then((user) => !user)
-                        .catch(() => false);
-                },
-                message: "email already exist",
+          {
+            validator(value: string) {
+              return models.User.findOne({ email: value })
+                .then((user: IUser) => !user)
+                .catch(() => false);
             },
-        ],
+            message: "email already exist",
+          },
+        ],*/
     },
     password: {
         type: String,
+        required: true
+    },
+    city: {
+        type: String,
+        required: true
+    },
+    photo: {
+        type: String,
+    },
+    phone: {
+        type: String,
         required: true,
-        match: [passRegex, "invalid password"]
+        unique: true,
+        //match: [phoneRegex, "number fortmat invalid"]
     },
     vehicles: [
         {
@@ -61,6 +82,17 @@ exports.userSchema = new mongoose_1.Schema({
         },
     ],
 }, { timestamps: true });
+exports.userSchema.methods.encryptPassword = function () {
+    return __awaiter(this, void 0, void 0, function* () {
+        const salt = yield bcrypt_1.default.genSalt(10);
+        return bcrypt_1.default.hash(this.password, salt);
+    });
+};
+exports.userSchema.methods.validatePassword = function (password) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield bcrypt_1.default.compare(password, this.password);
+    });
+};
 const User = (0, mongoose_1.model)("User", exports.userSchema);
 exports.default = User;
 //# sourceMappingURL=user.model.js.map

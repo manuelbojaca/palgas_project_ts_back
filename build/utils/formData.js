@@ -14,7 +14,7 @@ cloudinary_1.default.v2.config({
 // data.append("username", username);
 // data.append("file", file);
 function formData(preset) {
-    return function (req, res, next) {
+    return function (req, _res, next) {
         let uploadingFile = false;
         let uploadingCount = 0;
         const done = () => {

@@ -14,18 +14,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const user_model_1 = __importDefault(require("../models/user.model"));
 const vehicle_model_1 = __importDefault(require("../models/vehicle.model"));
-const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
 const vehicleController = {
-    list(req, res) {
+    list(_req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log("List");
                 const users = yield vehicle_model_1.default.find();
-                res.status(200).json({ message: "Users found", data: users });
+                res.status(200).json({ message: "Vehicles found", data: users });
             }
             catch (err) {
-                res.status(404).json({ message: "User not found", data: err });
+                res.status(404).json({ message: "Vehicles not found", data: err });
             }
         });
     },
@@ -46,19 +43,28 @@ const vehicleController = {
     update(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { userid } = req.params;
-                if (userid !== req.user) {
-                    throw new Error();
+                const { vehicleid } = req.params;
+                const vehicle = yield vehicle_model_1.default.findById(vehicleid);
+                if (!vehicle) {
+                    throw new Error("Invalid vehicle id");
                 }
-                const user = yield user_model_1.default.findByIdAndUpdate(userid, req.body, {
+                if (vehicle.userId.toString() !== req.userId) {
+                    throw new Error("Vehicle id does not belong to the user");
+                }
+                yield vehicle_model_1.default.findByIdAndUpdate(vehicleid, req.body, {
                     new: true,
                     runValidators: true,
                     context: "query",
                 }).select("-password");
-                res.status(200).json({ message: "User updated" });
+                res.status(200).json({ message: "Vehicle updated" });
             }
             catch (err) {
-                res.status(400).json({ message: "User could not be updated", data: err });
+                let message;
+                if (err instanceof Error)
+                    message = err.message;
+                else
+                    message = String(err);
+                res.status(400).json({ message: "Vehicle could not be updated", data: message });
             }
         });
     },
@@ -67,7 +73,7 @@ const vehicleController = {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { userid } = req.params;
-                if (userid !== req.user) {
+                if (userid !== req.userId) {
                     throw new Error();
                 }
                 const user = yield user_model_1.default.findByIdAndDelete(userid);
@@ -82,22 +88,25 @@ const vehicleController = {
     create(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const user = yield user_model_1.default.findById(req.user);
+                const user = yield user_model_1.default.findById(req.userId);
                 if (!user) {
                     throw new Error("Invalid user");
                 }
-                console.log('Vehicle:', user);
                 const data = req.body;
+                req.body.freeseats = req.body.seats;
                 const vehicle = yield vehicle_model_1.default.create(Object.assign(Object.assign({}, data), { userId: user._id }));
-                yield user.vehicles.push(vehicle._id);
+                user.vehicles.push(vehicle._id);
                 yield user.save({ validateBeforeSave: false });
                 res.status(201).json({
                     message: "vehicle created",
-                    data: { vehicle }
+                    data: vehicle,
                 });
             }
             catch (err) {
-                res.status(400).json({ message: "vehicle could not be created", data: err });
+                res.status(400).json({
+                    message: "vehicle could not be created",
+                    data: err
+                });
             }
         });
     },
